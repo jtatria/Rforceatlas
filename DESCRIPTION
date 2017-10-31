@@ -1,14 +1,18 @@
 Package: Rforceatlas
 Type: Package
-Title: What the Package Does (Title Case)
+Title: R implementation of Gephi's ForceAtlas2 graph layout algorithm
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: José Tomás Atria
+Maintainer: José Tomás Atria <jtatria@gmail.com>
+Description: R/Rcpp reimplementation of Jacomy et al.'s ForceAtlas2, 
+    originally developed in Java for the Gephi graph analysis software.
+License: GPL3
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 0.12.13), RcppEigen
-LinkingTo: Rcpp, RcppEigen
+Imports: 
+    Rcpp (>= 0.12.13),
+    RcppEigen
+LinkingTo:
+    Rcpp,
+    RcppEigen
 RoxygenNote: 6.0.1
