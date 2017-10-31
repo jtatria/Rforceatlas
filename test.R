@@ -1,5 +1,0 @@
-require( Rforceatlas )
-m <- igraph::sample_grg( 500, .4 ) %>% igraph::get.adjacency( type='both', sparse=FALSE )
-forceatlas( m )
-#cairoDevice::Cairo()
-#forceatlas_live( m, iter=100 )
