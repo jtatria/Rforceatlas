@@ -27,5 +27,6 @@ forceatlas_live <- function(
         pos <- forceatlas( m, ..., iter=step, init=pos, dim=dim )
         plot( pos, xlab=NA, ylab=NA, axes=FALSE )
     }
+    return( pos )
 }
 
