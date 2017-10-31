@@ -1,3 +1,20 @@
+// Rforceatlas: Rcpp implementation of the ForceAtlas2 algorithm
+// Copyright (C) 2017 José Tomás Atria jtatria at nomoi dot org
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+//' @backref src/forceatlas.cpp
 #include "Rforceatlas_types.hpp"
 
 using namespace Rcpp;
@@ -16,11 +33,14 @@ Mat dist_func( Mat pos, scalar min=0.01 ) {
 }
 
 Mat repl_func( Vec deg, Mat dist, scalar k=400 ) {
-    Mat out = ( ( deg.array() + 1 ).matrix() * ( deg.array() + 1 ).matrix().transpose() ).cwiseQuotient( dist ) * k;
+    Mat out = ( ( deg.array() + 1 ).matrix() * ( deg.array() + 1 ).matrix().transpose() )
+        .cwiseQuotient( dist ) * k;
     return out.eval();
 }
 
-Mat attr_func( Mat dist, Mat wgts, Vec deg, scalar delta=1.0, bool linlog=false, bool nohubs=false ) {
+Mat attr_func(
+    Mat dist, Mat wgts, Vec deg, scalar delta=1.0, bool linlog=false, bool nohubs=false
+) {
     Mat out = linlog ? dist.array().log1p() : dist;
     out = delta != 0 ? out.cwiseProduct( wgts.pow( delta ) ) : out;
     out = nohubs ? out.cwiseProduct( deg * Vec::Ones( deg.size() ).transpose() ) : out;
@@ -42,7 +62,8 @@ Mat force_func( Mat attr, Mat repl, Mat grav, Mat pos, Mat dist ) {
     for( ind i = 0; i < pos.cols(); i++ ) {
         Mat m1 = pos.col( i ) * Vec::Ones( pos.rows() ).transpose();
         Mat m2 = Vec::Ones( pos.rows() ) * pos.col( i ).transpose();
-        out.col( i ) = ( ( m1 - m2 ).cwiseQuotient( dist ).cwiseProduct( repl - attr ) ).rowwise().sum();
+        out.col( i ) = ( ( m1 - m2 ).cwiseQuotient( dist ).cwiseProduct( repl - attr ) )
+            .rowwise().sum();
     }
     out = out + grav;
     return out;
@@ -61,19 +82,59 @@ Vec speed_func( Mat f_t0, Mat f_t1, Vec deg, scalar tol=.1, scalar s=.1, scalar 
     return speed;
 }
 
-RMatD forceatlas2(
+//' ForceAtlas2 graph layout algortihm
+//'
+//' Place vertices on an n-dimensional space using the ForceAtlas2 algorithm by
+//' Jacomy et al. (2014), originally developed in Java for the Gephi graph analysis software.
+//' This implementation has been written from scratch in C++ following the R implementation by
+//' Klockiewicz and Álvarez.
+//'
+//' A full description of the algorithm and all of its parameters can be found in the reference
+//' below.
+//'
+//' @references
+//' Jacomy, Mathieu, Tommaso Venturini, Sebastien Heymann, and Mathieu Bastian. "ForceAtlas2, a
+//' Continuous Graph Layout Algorithm for Handy Network Visualization Designed for the Gephi
+//' Software." PLOS ONE 9, no. 6 (June 10, 2014): e98679.
+//' \link{https://doi.org/10.1371/journal.pone.0098679}.
+//'
+//' @param m      An adjacency matrix.
+//' @param iter   Integer, number of iterations.
+//' @param linlog Logical. Use log( distance ) for initial attraction forces instead of plain
+//'               distance. Defaults to FALSE.
+//' @param nohubs Logical. Dissuade hubs, placing authorities closer to the center. Defaults to
+//'               FALSE.
+//' @param k      Numeric. Repulsion scaling factor. Defaults to 400.
+//' @param G      Numeric. Gravity scaling factor. Defaults to 1.
+//' @param ks     Numeric. Local speed scaling factor. Defaults to .1.
+//' @param ksmax  Numeric. Maximum local speed. Defaults to 10.
+//' @param delta  Numeric. Exponent to weight attraction forces according to the entries in m.
+//' @param tol    Numeric. Tolerance to swinging. Defaults to .1
+//' @param dim    Integer. Number of dimensions to position vertices against. Defaults to 2.
+//' @param init   Numeric matrix of dimensions nrow( m ) * dim giving initial vertex location.
+//'               Defaults to random locations in a -1000,1000 square.
+//' @param center Numeric vector of length equal to dim specifying the location of the plot center.
+//'               Defaults to origin (\code{rep( 0, length( dim ) )}).
+//'
+//' @return A numeric matrix with as many rows as vertices and as many columns as dim giving the
+//'         locations of the vertices in the requested R^dim space.
+//'
+//' @author José Tomás Atria \email{jtatria@@gmail.com}
+//'
+//' @family graph layout
+//' @export
+// [[Rcpp::export]]
+RMatD forceatlas(
     RMatD m, int iter=100, bool linlog=false, bool nohubs=false, scalar k=400, scalar G=1,
     scalar ks=0.1, scalar ksmax=10.0, scalar delta=1.0, scalar tol=0.1, ind dim=2,
-    Nullable<RMatD> init_pos=R_NilValue,
-    Nullable<RVecD> orig_pos=R_NilValue, int plotstep=10
+    Nullable<RMatD> init=R_NilValue, Nullable<RVecD> center=R_NilValue
 ) {
     Mat A      = as<Mat>( m );
     ind n      = A.rows();
-    Vec orig   = ( orig_pos.isNull() ) ? Vec::Zero( dim ) : as<Vec>( orig_pos.get() );
-    Mat pos    = ( init_pos.isNull() ) ? Mat::Random( A.rows(), dim ) * 1000 : as<Mat>( init_pos.get() );
+    Vec orig   = ( center.isNull() ) ? Vec::Zero( dim ) : as<Vec>( center.get() );
+    Mat pos    = ( init.isNull() ) ? Mat::Random( A.rows(), dim ) * 1000 : as<Mat>( init.get() );
     Vec deg    = ( A.array() != 0 ).select( Mat::Ones( n, n ), Mat::Zero( n, n ) ).rowwise().sum();
     Mat force = Mat::Zero( n, dim );
-
     for( int e = 0; e < iter; e++ ) {
         Mat last = force.eval();
         Mat dist = dist_func( pos );

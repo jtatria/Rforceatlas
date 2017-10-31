@@ -7,95 +7,9 @@
 
 using namespace Rcpp;
 
-// dist_func
-Mat dist_func(Mat pos, scalar min);
-RcppExport SEXP _Rforceatlas_dist_func(SEXP posSEXP, SEXP minSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Mat >::type pos(posSEXP);
-    Rcpp::traits::input_parameter< scalar >::type min(minSEXP);
-    rcpp_result_gen = Rcpp::wrap(dist_func(pos, min));
-    return rcpp_result_gen;
-END_RCPP
-}
-// repl_func
-Mat repl_func(Vec deg, Mat dist, scalar k);
-RcppExport SEXP _Rforceatlas_repl_func(SEXP degSEXP, SEXP distSEXP, SEXP kSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Vec >::type deg(degSEXP);
-    Rcpp::traits::input_parameter< Mat >::type dist(distSEXP);
-    Rcpp::traits::input_parameter< scalar >::type k(kSEXP);
-    rcpp_result_gen = Rcpp::wrap(repl_func(deg, dist, k));
-    return rcpp_result_gen;
-END_RCPP
-}
-// attr_func
-Mat attr_func(Mat dist, Mat wgts, Vec deg, scalar delta, bool linlog, bool nohubs);
-RcppExport SEXP _Rforceatlas_attr_func(SEXP distSEXP, SEXP wgtsSEXP, SEXP degSEXP, SEXP deltaSEXP, SEXP linlogSEXP, SEXP nohubsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Mat >::type dist(distSEXP);
-    Rcpp::traits::input_parameter< Mat >::type wgts(wgtsSEXP);
-    Rcpp::traits::input_parameter< Vec >::type deg(degSEXP);
-    Rcpp::traits::input_parameter< scalar >::type delta(deltaSEXP);
-    Rcpp::traits::input_parameter< bool >::type linlog(linlogSEXP);
-    Rcpp::traits::input_parameter< bool >::type nohubs(nohubsSEXP);
-    rcpp_result_gen = Rcpp::wrap(attr_func(dist, wgts, deg, delta, linlog, nohubs));
-    return rcpp_result_gen;
-END_RCPP
-}
-// grav_func
-Mat grav_func(Mat pos, Vec deg, Vec orig, scalar G);
-RcppExport SEXP _Rforceatlas_grav_func(SEXP posSEXP, SEXP degSEXP, SEXP origSEXP, SEXP GSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Mat >::type pos(posSEXP);
-    Rcpp::traits::input_parameter< Vec >::type deg(degSEXP);
-    Rcpp::traits::input_parameter< Vec >::type orig(origSEXP);
-    Rcpp::traits::input_parameter< scalar >::type G(GSEXP);
-    rcpp_result_gen = Rcpp::wrap(grav_func(pos, deg, orig, G));
-    return rcpp_result_gen;
-END_RCPP
-}
-// force_func
-Mat force_func(Mat attr, Mat repl, Mat grav, Mat pos, Mat dist);
-RcppExport SEXP _Rforceatlas_force_func(SEXP attrSEXP, SEXP replSEXP, SEXP gravSEXP, SEXP posSEXP, SEXP distSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Mat >::type attr(attrSEXP);
-    Rcpp::traits::input_parameter< Mat >::type repl(replSEXP);
-    Rcpp::traits::input_parameter< Mat >::type grav(gravSEXP);
-    Rcpp::traits::input_parameter< Mat >::type pos(posSEXP);
-    Rcpp::traits::input_parameter< Mat >::type dist(distSEXP);
-    rcpp_result_gen = Rcpp::wrap(force_func(attr, repl, grav, pos, dist));
-    return rcpp_result_gen;
-END_RCPP
-}
-// speed_func
-Vec speed_func(Mat f_t0, Mat f_t1, Vec deg, scalar tol, scalar s, scalar smax);
-RcppExport SEXP _Rforceatlas_speed_func(SEXP f_t0SEXP, SEXP f_t1SEXP, SEXP degSEXP, SEXP tolSEXP, SEXP sSEXP, SEXP smaxSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Mat >::type f_t0(f_t0SEXP);
-    Rcpp::traits::input_parameter< Mat >::type f_t1(f_t1SEXP);
-    Rcpp::traits::input_parameter< Vec >::type deg(degSEXP);
-    Rcpp::traits::input_parameter< scalar >::type tol(tolSEXP);
-    Rcpp::traits::input_parameter< scalar >::type s(sSEXP);
-    Rcpp::traits::input_parameter< scalar >::type smax(smaxSEXP);
-    rcpp_result_gen = Rcpp::wrap(speed_func(f_t0, f_t1, deg, tol, s, smax));
-    return rcpp_result_gen;
-END_RCPP
-}
-// forceatlas2
-RMatD forceatlas2(RMatD m, int iter, bool linlog, bool nohubs, scalar k, scalar G, scalar ks, scalar ksmax, scalar delta, scalar tol, ind dim, Nullable<RMatD> init_pos, Nullable<RVecD> orig_pos, int plotstep);
-RcppExport SEXP _Rforceatlas_forceatlas2(SEXP mSEXP, SEXP iterSEXP, SEXP linlogSEXP, SEXP nohubsSEXP, SEXP kSEXP, SEXP GSEXP, SEXP ksSEXP, SEXP ksmaxSEXP, SEXP deltaSEXP, SEXP tolSEXP, SEXP dimSEXP, SEXP init_posSEXP, SEXP orig_posSEXP, SEXP plotstepSEXP) {
+// forceatlas
+RMatD forceatlas(RMatD m, int iter, bool linlog, bool nohubs, scalar k, scalar G, scalar ks, scalar ksmax, scalar delta, scalar tol, ind dim, Nullable<RMatD> init, Nullable<RVecD> center);
+RcppExport SEXP _Rforceatlas_forceatlas(SEXP mSEXP, SEXP iterSEXP, SEXP linlogSEXP, SEXP nohubsSEXP, SEXP kSEXP, SEXP GSEXP, SEXP ksSEXP, SEXP ksmaxSEXP, SEXP deltaSEXP, SEXP tolSEXP, SEXP dimSEXP, SEXP initSEXP, SEXP centerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -110,22 +24,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< scalar >::type delta(deltaSEXP);
     Rcpp::traits::input_parameter< scalar >::type tol(tolSEXP);
     Rcpp::traits::input_parameter< ind >::type dim(dimSEXP);
-    Rcpp::traits::input_parameter< Nullable<RMatD> >::type init_pos(init_posSEXP);
-    Rcpp::traits::input_parameter< Nullable<RVecD> >::type orig_pos(orig_posSEXP);
-    Rcpp::traits::input_parameter< int >::type plotstep(plotstepSEXP);
-    rcpp_result_gen = Rcpp::wrap(forceatlas2(m, iter, linlog, nohubs, k, G, ks, ksmax, delta, tol, dim, init_pos, orig_pos, plotstep));
+    Rcpp::traits::input_parameter< Nullable<RMatD> >::type init(initSEXP);
+    Rcpp::traits::input_parameter< Nullable<RVecD> >::type center(centerSEXP);
+    rcpp_result_gen = Rcpp::wrap(forceatlas(m, iter, linlog, nohubs, k, G, ks, ksmax, delta, tol, dim, init, center));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_Rforceatlas_dist_func", (DL_FUNC) &_Rforceatlas_dist_func, 2},
-    {"_Rforceatlas_repl_func", (DL_FUNC) &_Rforceatlas_repl_func, 3},
-    {"_Rforceatlas_attr_func", (DL_FUNC) &_Rforceatlas_attr_func, 6},
-    {"_Rforceatlas_grav_func", (DL_FUNC) &_Rforceatlas_grav_func, 4},
-    {"_Rforceatlas_force_func", (DL_FUNC) &_Rforceatlas_force_func, 5},
-    {"_Rforceatlas_speed_func", (DL_FUNC) &_Rforceatlas_speed_func, 6},
-    {"_Rforceatlas_forceatlas2", (DL_FUNC) &_Rforceatlas_forceatlas2, 14},
+    {"_Rforceatlas_forceatlas", (DL_FUNC) &_Rforceatlas_forceatlas, 13},
     {NULL, NULL, 0}
 };
 
