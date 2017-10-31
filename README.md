@@ -3,8 +3,8 @@
 R/Rcpp implementation of Gephi's ForceAtlas2 graph layout algorithm.
 
 Detailed discussion of the procedure and its parameters can be found in Jacomy M, Venturini T,
-Heymann S, Bastian M (2014) ForceAtlas2, a Continuous Graph Layout Algorithm for Handy Network
-Visualization Designed for the Gephi Software.
+Heymann S, Bastian M (2014) _ForceAtlas2, a Continuous Graph Layout Algorithm for Handy Network
+Visualization Designed for the Gephi Software_.
 [PLoS ONE 9(6): e98679](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0098679).
 
 This implementation has been written from scratch in C++ using Eigen for all numerical computations.
