@@ -20,7 +20,7 @@
 #' @export
 layout_with_fa2 <- function( g, attr='weight', live=FALSE, ... ) {
     attr <- if( is.null( igraph::edge_attr( g, attr ) ) ) NULL else attr
-    m <- igraph::as_adjacency_matrix( g, type='both', attr=attr, sparse=FALSE )
+    m <- igraph::as_adjacency_matrix( g, type='both', attr=attr )
     res <- if( live ) {
         forceatlas_live( m, ... )
     } else {

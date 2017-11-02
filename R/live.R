@@ -28,24 +28,25 @@ forceatlas_live <- function( m, iter=100, step=10, device=NULL, edges=FALSE, axe
         last <- pos
         pos <- forceatlas( m, iter=step, init=pos, dim=2, ... )
         plot_step( m, pos, e*step, iter, edges=edges, xlab=NA, ylab=NA, axes=axes )
-        if( max( abs( last - pos ) ) == 0 ) {
+        if( !is.null( last ) && max( abs( last - pos ) ) == 0 ) {
             message( "Convergence reached!" )
             break
         }
     }
-    plot_step( m, pos, iter, iter, edges=TRUE, xlab=NA, ylab=NA, axes=axes )
+    plot_step( m, pos, e*step, iter, edges=TRUE, xlab=NA, ylab=NA, axes=axes )
     return( pos )
 }
 
 #' @export
+#' @importFrom Matrix which
 plot_step <- function( m, pos, iter, total, edges=FALSE, lwd=.1, ecol='grey', ... ) {
     plot( NA, ..., pty='s',
         xlim=c( min( pos[,1] ), max( pos[,1] ) ), ylim=c( min( pos[,2] ), max( pos[,2] ) )
     )
     if( edges && any( m != 0 ) ) {
         e <- which( m != 0, arr.ind=TRUE )
-        e0 <- pos[e[,'row'],]
-        e1 <- pos[e[,'col'],]
+        e0 <- pos[e[,1],]
+        e1 <- pos[e[,2],]
         segments( e0[,1], e0[,2], e1[,1], e1[,2], lwd=lwd, col=ecol )
         # TODO extra info?
     }

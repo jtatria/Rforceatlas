@@ -7,9 +7,9 @@
 \alias{forceatlas_live}
 \title{ForceAtlas2 graph layout algortihm}
 \usage{
-forceatlas(m, iter = 100L, linlog = FALSE, nohubs = FALSE, k = 1,
-  G = 1L, strong = FALSE, ks = 0.1, ksmax = 10, delta = 0,
-  tol = 0.1, dim = 2L, init = NULL, center = NULL)
+forceatlas(m, init = NULL, center = NULL, dim = 2L, iter = 100L,
+  delta = 1, tol = 1, k = 10, G = 1, linlog = FALSE, strong = FALSE,
+  nohubs = FALSE, overlap = FALSE)
 
 layout_with_fa2(g, attr = "weight", live = FALSE, ...)
 
@@ -21,7 +21,23 @@ forceatlas_live(m, iter = 100, step = 10, device = NULL, edges = FALSE,
 \arguments{
 \item{m}{An adjacency matrix.}
 
+\item{init}{Numeric matrix of dimensions nrow( m ) * dim giving initial vertex location.
+Defaults to random locations in a -1,1 square.}
+
+\item{center}{Numeric vector of length equal to dim specifying the location of the plot center.
+Defaults to origin (\code{rep( 0, length( dim ) )}).}
+
+\item{dim}{Integer. Number of dimensions to position vertices against. Defaults to 2.}
+
 \item{iter}{Integer, number of iterations.}
+
+\item{delta}{Numeric. Exponent to weight attraction forces according to the entries in m.}
+
+\item{tol}{Numeric. Tolerance to swinging. Defaults to .1}
+
+\item{k}{Numeric. Repulsion scaling factor. Defaults to 400.}
+
+\item{G}{Numeric. Gravity scaling factor. Defaults to 1.}
 
 \item{linlog}{Logical. Use log( distance ) for initial attraction forces instead of plain
 distance. Defaults to FALSE.}
@@ -29,31 +45,15 @@ distance. Defaults to FALSE.}
 \item{nohubs}{Logical. Dissuade hubs, placing authorities closer to the center. Defaults to
 FALSE.}
 
-\item{k}{Numeric. Repulsion scaling factor. Defaults to 400.}
-
-\item{G}{Numeric. Gravity scaling factor. Defaults to 1.}
-
-\item{ks}{Numeric. Local speed scaling factor. Defaults to .1.}
-
-\item{ksmax}{Numeric. Maximum local speed. Defaults to 10.}
-
-\item{delta}{Numeric. Exponent to weight attraction forces according to the entries in m.}
-
-\item{tol}{Numeric. Tolerance to swinging. Defaults to .1}
-
-\item{dim}{Integer. Number of dimensions to position vertices against. Defaults to 2.}
-
-\item{init}{Numeric matrix of dimensions nrow( m ) * dim giving initial vertex location.
-Defaults to random locations in a -1,1 square.}
-
-\item{center}{Numeric vector of length equal to dim specifying the location of the plot center.
-Defaults to origin (\code{rep( 0, length( dim ) )}).}
-
 \item{live}{Logical. If TRUE, attempt to plot intermediate convergence steps.}
 
 \item{...}{Passed to \code{layout_with_fa2}}
 
 \item{step}{Integer. How many iterations to run in-between frames.}
+
+\item{ks}{Numeric. Local speed scaling factor. Defaults to .1.}
+
+\item{ksmax}{Numeric. Maximum local speed. Defaults to 10.}
 
 \item{...}{Passed to \code{forceatlas}}
 }
