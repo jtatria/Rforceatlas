@@ -17,6 +17,5 @@
 
 #' @import Rcpp
 #' @import RcppEigen
-#' @importFrom RcppParallel RcppParallelLibs
 #' @useDynLib Rforceatlas
 NULL

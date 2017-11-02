@@ -1,144 +1,86 @@
-//' @backref src/nufa.cpp
+// Rforceatlas: Rcpp implementation of the ForceAtlas2 algorithm
+// Copyright (C) 2017 José Tomás Atria jtatria at nomoi dot org
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+//' @backref src/forceatlas.cpp
 
 #include "Rforceatlas_types.hpp"
-// [[Rcpp::depends(RcppParallel)]]
-#include <RcppParallel.h>
 
 using namespace Rcpp;
 
-using F = std::function<Vec(Vec,ind)>;
-
-const scalar EPSILON = 0.00000001;
-
-volatile static int WTF;
-void wtf() {
-    WTF = -99;
-}
-
-namespace wrk {
-    struct LambdaWorker : public RcppParallel::Worker {
-        const Mat src;
-        const F func;
-        Mat tgt;
-
-        LambdaWorker( const Mat& src, Mat& tgt, const F func )
-            : src( src ), tgt( tgt ), func( func ) {}
-
-        void operator()( std::size_t begin, std::size_t end ) {
-            for( std::size_t i = begin; i < end; i++ ) {
-                tgt.row( i ) = func( src.row( i ), i );
-            }
-        }
-    };
-
-    void parallel( const Mat& src, Mat& tgt, const F func ) {
-        LambdaWorker wrkr( src, tgt, func );
-        RcppParallel::parallelFor( 0, src.rows(), wrkr );
-    }
-
-    void serial( const Mat& src, Mat& tgt, const F func ) {
-        for( ind i = 0; i < src.rows(); i++ ) {
-            tgt.row( i ) = func( src.row( i ), i );
-        }
-    }
-};
-
-// [[Rcpp::export]]
-scalar attr_func(
-    const scalar k, const scalar d, const scalar deg_i, const scalar wgt,
-    const bool linlog, const bool nohubs, const bool overlap
-) {
-    if( overlap ) return 0;
-    if( wgt == 0 ) return 0;
-    scalar a = k * wgt;
-    a *= linlog ? std::log<scalar>( 1.0 + d ).real() / d : 1.0;
-    a /= nohubs ? deg_i : 1.0;
-    return a;
-}
-
-// [[Rcpp::export]]
-scalar repl_func(
-    const scalar k, const scalar d, const scalar deg_i, const scalar deg_j,
-    const bool overlap
-) {
-    scalar r = ( overlap ) ? 100 * k * deg_i * deg_j : k * deg_i * deg_j / d / d;
-    return r * -1.0;
-}
-
-// [[Rcpp::export]]
-scalar grav_func(
-    const scalar k, const scalar d, const scalar deg_i, const scalar G, const bool strong
-) {
-    scalar g = G / d;//( strong ) ? k * deg_i * G : k * deg_i * G / d;
-    return g;
-}
-
-bool get_overlap( const scalar d, const ind i, const ind j ) {
-    return false;
-}
-
-scalar edge_weight( scalar delta, scalar w ) {
-    if( w == 0.0 ) return 0.0;
-    if( delta <= 0.0 ) return 1.0;
-    if( delta <= 1.0 ) return w;
-    return std::pow<scalar>( w, delta );
-}
-
-Mat force_func(
-    const Mat& pos, const Vec& deg, const Mat& W, const scalar k,
-    const scalar delta, const scalar G,
-    const bool linlog, const bool nohubs, const bool strong,
-    const Vec& orig
-) {
-    Mat force = Mat::Zero( pos.rows(), pos.cols() );
-    // F inner_l = [&]( const Vec& vi, ind i ) -> Vec {
+Mat dist_func( Mat pos, scalar min=0.01 ) {
+    Mat dist( pos.rows(), pos.rows() );
     for( ind i = 0; i < pos.rows(); i++ ) {
-        Vec vi = pos.row( i );
-        scalar deg_i = deg[i];
         for( ind j = 0; j < pos.rows(); j++ ) {
-            if( i == j ) continue;
+            Vec vi = pos.row( i );
             Vec vj = pos.row( j );
-            scalar deg_j = deg[j];
-            Vec ij = ( vi - vj ).eval();
-            scalar d = ij.norm();
-            bool overlap = get_overlap( d, i, j );
-            scalar w = edge_weight( W( i, j ), delta );
-            scalar a = 0; //attr_func( k, d, deg_i, w, linlog, nohubs, overlap );
-            scalar r = 0; //repl_func( k, d, deg_i, deg_j, overlap );
-            Vec dj = ( ij * ( a + r ) );
-            force.row( i ) += dj;
+            dist.coeffRef( i, j ) = ( vi - vj ).norm();
         }
-        Vec vg = ( orig - vi );
-        scalar d = vg.norm();
-        scalar g = grav_func( k, d, deg_i, G / k, strong );
-        Vec dg  = ( vg * g );
-        force.row( i ) += dg;
     }
-    //     return ( fi + gravity( vi, orig, G, degi, strong ) );
-    // };
-    // impl::serial( pos, force, inner_l );
-    if( ( force.array() == 0 ).any() ) wtf();
-    return force;
+    dist = ( min > 0 ) ? ( dist.array() < min ).select( min, dist ) : dist;
+    return dist;
 }
 
-bool conv_theta( const Vec& swing ) {
-    return false;
+Mat repl_func( Vec deg, Mat dist, scalar k=400 ) {
+    Mat out = ( ( deg.array() + 1 ).matrix() * ( deg.array() + 1 ).matrix().transpose() )
+        .cwiseQuotient( dist ) * k;
+    return out.eval();
 }
 
-Vec speed_func(
-    const Mat& f_t0, const Mat& f_t1, const Vec& deg,
-    const scalar tol, const scalar ks, const scalar ksmax
+Mat attr_func(
+    Mat dist, Mat wgts, Vec deg, scalar delta=1.0, bool linlog=false, bool nohubs=false
 ) {
-    // Vec swing = ( f_t0 - f_t1 ).rowwise().norm();
-    // if( ( conv_theta( swing ) ) ) return Vec::Zero( f_t0.rows() );
-    // Vec tract = ( f_t0 + f_t1 ).rowwise().norm() / 2;
-    // scalar swing_g = swing.cwiseProduct( ( deg.array() + 1.0 ).matrix() ).sum();
-    // scalar tract_g = tract.cwiseProduct( ( deg.array() + 1.0 ).matrix() ).sum();
-    // scalar speed_g = tol * tract_g / swing_g;
-    // Vec speed = ( swing.cwiseSqrt() * ( speed_g + 1.0 ) ).array().pow( -1 ) * ( ks * speed_g );
-    // Vec speed_max = ( f_t0.rowwise().norm() ).array().pow( -1.0 ) * ksmax;
-    // return ( speed.array() > speed_max.array() ).select( speed_max, speed );
-    return Vec::Ones( f_t1.rows() );
+    Mat out = linlog ? dist.array().log1p() : dist;
+    out = delta != 0 ? out.cwiseProduct( wgts.pow( delta ) ) : out;
+    out = nohubs ? out.cwiseProduct( deg * Vec::Ones( deg.size() ).transpose() ) : out;
+    return out;
+}
+
+Mat grav_func( Mat pos, Vec deg, Vec orig=Vec::Zero( 2 ), scalar G=1.0 ) {
+    Mat out( pos.rows(), pos.cols() );
+    for( ind i = 0; i < pos.rows(); i++ ) {
+        Vec uv = ( orig.transpose() - pos.row( i ) );
+        uv = ( uv.array() / uv.norm() * ( G * ( deg( i ) + 1.0 ) ) );
+        out.row( i ) = uv;
+    }
+    return out;
+}
+
+Mat force_func( Mat attr, Mat repl, Mat grav, Mat pos, Mat dist ) {
+    Mat out( pos.rows(), pos.cols() );
+    for( ind i = 0; i < pos.cols(); i++ ) {
+        Mat m1 = pos.col( i ) * Vec::Ones( pos.rows() ).transpose();
+        Mat m2 = Vec::Ones( pos.rows() ) * pos.col( i ).transpose();
+        out.col( i ) = ( ( m1 - m2 ).cwiseQuotient( dist ).cwiseProduct( repl - attr ) )
+            .rowwise().sum();
+    }
+    out = out + grav;
+    return out;
+}
+
+Vec speed_func( Mat f_t0, Mat f_t1, Vec deg, scalar tol=.1, scalar s=.1, scalar smax=10.0 ) {
+    Vec swing = ( f_t0 - f_t1 ).rowwise().sum().cwiseAbs();
+    if( ( swing.array() == 0.0 ).all() ) return swing;
+    Vec tract = ( f_t0 + f_t1 ).rowwise().sum().cwiseAbs();
+    scalar swing_g = swing.cwiseProduct( ( deg.array() + 1.0 ).matrix() ).sum();
+    scalar tract_g = tract.cwiseProduct( ( deg.array() + 1.0 ).matrix() ).sum();
+    scalar speed_g = tol * tract_g / swing_g;
+    Vec speed_max = ( f_t0.rowwise().norm() ).array().pow( -1.0 ) * smax;
+    Vec speed = ( swing.cwiseSqrt() * ( speed_g + 1.0 ) ).array().pow( -1 ) * ( s * speed_g );
+    speed = ( speed.array() > speed_max.array() ).select( speed_max, speed );
+    return speed;
 }
 
 //' ForceAtlas2 graph layout algortihm
@@ -171,7 +113,7 @@ Vec speed_func(
 //' @param tol    Numeric. Tolerance to swinging. Defaults to .1
 //' @param dim    Integer. Number of dimensions to position vertices against. Defaults to 2.
 //' @param init   Numeric matrix of dimensions nrow( m ) * dim giving initial vertex location.
-//'               Defaults to random locations in a -1,1 square.
+//'               Defaults to random locations in a -1000,1000 square.
 //' @param center Numeric vector of length equal to dim specifying the location of the plot center.
 //'               Defaults to origin (\code{rep( 0, length( dim ) )}).
 //'
@@ -184,26 +126,28 @@ Vec speed_func(
 //' @export
 // [[Rcpp::export]]
 RMatD forceatlas(
-    RMatD m, int iter=100, bool linlog=false, bool nohubs=false,
-    scalar k=1.0, scalar G=1,
-    bool strong=false, scalar ks=0.1, scalar ksmax=10.0, scalar delta=0.0, scalar tol=0.1,
-    ind dim=2, Nullable<RMatD> init=R_NilValue, Nullable<RVecD> center=R_NilValue
+    RMatD m, int iter=100, bool linlog=false, bool nohubs=false, scalar k=400, scalar G=1,
+    scalar ks=0.1, scalar ksmax=10.0, scalar delta=1.0, scalar tol=0.1, ind dim=2,
+    Nullable<RMatD> init=R_NilValue, Nullable<RVecD> center=R_NilValue
 ) {
-    Mat W     = as_rowmat( m );
-    ind n     = W.rows();
-    Vec orig  = ( center.isNull() ) ? Vec::Zero( dim ) : as<Vec>( center.get() );
-    Mat pos   = ( init.isNull() ) ? Mat::Random( W.rows(), dim ) * 1000: as_rowmat( init.get() );
-    Vec deg   = ( W.array() != 0 ).select( Mat::Ones( n, n ), Mat::Zero( n, n ) ).rowwise().sum();
+    Mat A      = as<Mat>( m );
+    ind n      = A.rows();
+    Vec orig   = ( center.isNull() ) ? Vec::Zero( dim ) : as<Vec>( center.get() );
+    Mat pos    = ( init.isNull() ) ? Mat::Random( A.rows(), dim ) * 1000 : as<Mat>( init.get() );
+    Vec deg    = ( A.array() != 0 ).select( Mat::Ones( n, n ), Mat::Zero( n, n ) ).rowwise().sum();
     Mat force = Mat::Zero( n, dim );
     for( int e = 0; e < iter; e++ ) {
         Mat last = force.eval();
-        force = force_func( pos, deg, W, k, delta, G, linlog, nohubs, strong, orig );
+        Mat dist = dist_func( pos );
+        Mat repl = repl_func( deg, dist, k );
+        Mat attr = attr_func( dist, A, deg, delta, linlog, nohubs );
+        Mat grav = grav_func( pos, deg, orig, G );
+        force = force_func( attr, repl, grav, pos, dist );
         Vec speed = speed_func( force, last, deg, tol, ks, ksmax );
-        if( speed.isZero() ) break;
-        for( ind i = 0; i < pos.rows(); i++ ) {
-            pos.row( i ) += force.row( i ) * speed[i];
+        if( ( speed.array() == 0.0 ).all() ) break;
+        for( ind i = 0; i < force.rows(); i++ ) {
+            pos.row( i ) += force.row( i ) * speed( i );
         }
-        if( ( pos.array() == 0 ).any() ) wtf();
     }
-    return wrap_rowmat( pos );
+    return wrap( pos );
 }
