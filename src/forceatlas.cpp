@@ -69,7 +69,7 @@ scalar repl_func(
 scalar grav_func(
     const scalar k, const scalar d, const scalar deg_i, const scalar G, const bool strong
 ) {
-    scalar g = G / d;//( strong ) ? k * deg_i * G : k * deg_i * G / d;
+    scalar g = k * G * ( deg_i + 1.0 ) / d;//( strong ) ? k * deg_i * G : k * deg_i * G / d;
     return g;
 }
 
@@ -138,7 +138,14 @@ Vec speed_func(
     // Vec speed = ( swing.cwiseSqrt() * ( speed_g + 1.0 ) ).array().pow( -1 ) * ( ks * speed_g );
     // Vec speed_max = ( f_t0.rowwise().norm() ).array().pow( -1.0 ) * ksmax;
     // return ( speed.array() > speed_max.array() ).select( speed_max, speed );
-    return Vec::Ones( f_t1.rows() );
+    return Vec::Ones( f_t0.rows() );
+}
+
+void disp_func( const Mat& force, const Vec& speed, Mat& disp ) {
+    for( ind i = 0; i < disp.rows(); i++ ) {
+        disp.row( i ) = force.row( i ) * speed[i];
+    }
+    disp.eval();
 }
 
 //' ForceAtlas2 graph layout algortihm
@@ -195,15 +202,14 @@ RMatD forceatlas(
     Mat pos   = ( init.isNull() ) ? Mat::Random( W.rows(), dim ) * 1000: as_rowmat( init.get() );
     Vec deg   = ( W.array() != 0 ).select( Mat::Ones( n, n ), Mat::Zero( n, n ) ).rowwise().sum();
     Mat force = Mat::Zero( n, dim );
+    Mat disp  = Mat::Zero( n, dim );
     for( int e = 0; e < iter; e++ ) {
         Mat last = force.eval();
         force = force_func( pos, deg, W, k, delta, G, linlog, nohubs, strong, orig );
         Vec speed = speed_func( force, last, deg, tol, ks, ksmax );
         if( speed.isZero() ) break;
-        for( ind i = 0; i < pos.rows(); i++ ) {
-            pos.row( i ) += force.row( i ) * speed[i];
-        }
-        if( ( pos.array() == 0 ).any() ) wtf();
+        disp_func( force, speed, disp );
+        pos += disp;
     }
     return wrap_rowmat( pos );
 }

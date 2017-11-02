@@ -39,7 +39,7 @@ forceatlas_live <- function( m, iter=100, step=10, device=NULL, edges=FALSE, axe
 
 #' @export
 plot_step <- function( m, pos, iter, total, edges=FALSE, lwd=.1, ecol='grey', ... ) {
-    plot( NA, ...,
+    plot( NA, ..., pty='s',
         xlim=c( min( pos[,1] ), max( pos[,1] ) ), ylim=c( min( pos[,2] ), max( pos[,2] ) )
     )
     if( edges && any( m != 0 ) ) {
