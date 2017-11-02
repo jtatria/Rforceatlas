@@ -25,12 +25,22 @@
 
 typedef Rcpp::NumericMatrix RMatD;
 typedef Rcpp::NumericVector RVecD;
-typedef Rcpp::IntegerMatrix RMatI;
-typedef Rcpp::IntegerVector RVecI;
-
-typedef Eigen::Index ind;
-typedef Eigen::MatrixXd Mat;
+typedef Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> Mat;
 typedef Eigen::VectorXd Vec;
 typedef Mat::Scalar scalar;
+typedef Eigen::Index ind;
+
+inline Mat as_rowmat( RMatD input ) {
+    Eigen::MatrixXd tmp = Rcpp::as<Eigen::MatrixXd>( input );
+    Mat out( tmp.rows(), tmp.cols() );
+    out = tmp;
+    return out;
+}
+
+inline RMatD wrap_rowmat( Mat output ) {
+    Eigen::MatrixXd tmp( output.rows(), output.cols() );
+    tmp = output;
+    return Rcpp::wrap( tmp );
+}
 
 #endif // TYPES_

@@ -7,16 +7,16 @@
 \alias{forceatlas_live}
 \title{ForceAtlas2 graph layout algortihm}
 \usage{
-forceatlas(m, iter = 100L, linlog = FALSE, nohubs = FALSE, k = 400L,
-  G = 1L, ks = 0.1, ksmax = 10, delta = 1, tol = 0.1, dim = 2L,
-  init = NULL, center = NULL)
+forceatlas(m, iter = 100L, linlog = FALSE, nohubs = FALSE, k = 1,
+  G = 1L, strong = FALSE, ks = 0.1, ksmax = 10, delta = 0,
+  tol = 0.1, dim = 2L, init = NULL, center = NULL)
 
 layout_with_fa2(g, attr = "weight", live = FALSE, ...)
 
 with_fa2(...)
 
-forceatlas_live(m, iter = 100, step = 10, dim = 2,
-  init = matrix(runif(nrow(m) * dim, -1, 1) * 1000, nrow(m), dim), ...)
+forceatlas_live(m, iter = 100, step = 10, device = NULL, edges = FALSE,
+  axes = FALSE, init = NULL, ...)
 }
 \arguments{
 \item{m}{An adjacency matrix.}
@@ -44,7 +44,7 @@ FALSE.}
 \item{dim}{Integer. Number of dimensions to position vertices against. Defaults to 2.}
 
 \item{init}{Numeric matrix of dimensions nrow( m ) * dim giving initial vertex location.
-Defaults to random locations in a -1000,1000 square.}
+Defaults to random locations in a -1,1 square.}
 
 \item{center}{Numeric vector of length equal to dim specifying the location of the plot center.
 Defaults to origin (\code{rep( 0, length( dim ) )}).}
@@ -52,6 +52,8 @@ Defaults to origin (\code{rep( 0, length( dim ) )}).}
 \item{live}{Logical. If TRUE, attempt to plot intermediate convergence steps.}
 
 \item{...}{Passed to \code{layout_with_fa2}}
+
+\item{step}{Integer. How many iterations to run in-between frames.}
 
 \item{...}{Passed to \code{forceatlas}}
 }

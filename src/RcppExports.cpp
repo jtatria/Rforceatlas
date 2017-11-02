@@ -7,9 +7,56 @@
 
 using namespace Rcpp;
 
+// attr_func
+scalar attr_func(const scalar k, const scalar d, const scalar deg_i, const scalar wgt, const bool linlog, const bool nohubs, const bool overlap);
+RcppExport SEXP _Rforceatlas_attr_func(SEXP kSEXP, SEXP dSEXP, SEXP deg_iSEXP, SEXP wgtSEXP, SEXP linlogSEXP, SEXP nohubsSEXP, SEXP overlapSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const scalar >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const scalar >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const scalar >::type deg_i(deg_iSEXP);
+    Rcpp::traits::input_parameter< const scalar >::type wgt(wgtSEXP);
+    Rcpp::traits::input_parameter< const bool >::type linlog(linlogSEXP);
+    Rcpp::traits::input_parameter< const bool >::type nohubs(nohubsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type overlap(overlapSEXP);
+    rcpp_result_gen = Rcpp::wrap(attr_func(k, d, deg_i, wgt, linlog, nohubs, overlap));
+    return rcpp_result_gen;
+END_RCPP
+}
+// repl_func
+scalar repl_func(const scalar k, const scalar d, const scalar deg_i, const scalar deg_j, const bool overlap);
+RcppExport SEXP _Rforceatlas_repl_func(SEXP kSEXP, SEXP dSEXP, SEXP deg_iSEXP, SEXP deg_jSEXP, SEXP overlapSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const scalar >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const scalar >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const scalar >::type deg_i(deg_iSEXP);
+    Rcpp::traits::input_parameter< const scalar >::type deg_j(deg_jSEXP);
+    Rcpp::traits::input_parameter< const bool >::type overlap(overlapSEXP);
+    rcpp_result_gen = Rcpp::wrap(repl_func(k, d, deg_i, deg_j, overlap));
+    return rcpp_result_gen;
+END_RCPP
+}
+// grav_func
+scalar grav_func(const scalar k, const scalar d, const scalar deg_i, const scalar G, const bool strong);
+RcppExport SEXP _Rforceatlas_grav_func(SEXP kSEXP, SEXP dSEXP, SEXP deg_iSEXP, SEXP GSEXP, SEXP strongSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const scalar >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const scalar >::type d(dSEXP);
+    Rcpp::traits::input_parameter< const scalar >::type deg_i(deg_iSEXP);
+    Rcpp::traits::input_parameter< const scalar >::type G(GSEXP);
+    Rcpp::traits::input_parameter< const bool >::type strong(strongSEXP);
+    rcpp_result_gen = Rcpp::wrap(grav_func(k, d, deg_i, G, strong));
+    return rcpp_result_gen;
+END_RCPP
+}
 // forceatlas
-RMatD forceatlas(RMatD m, int iter, bool linlog, bool nohubs, scalar k, scalar G, scalar ks, scalar ksmax, scalar delta, scalar tol, ind dim, Nullable<RMatD> init, Nullable<RVecD> center);
-RcppExport SEXP _Rforceatlas_forceatlas(SEXP mSEXP, SEXP iterSEXP, SEXP linlogSEXP, SEXP nohubsSEXP, SEXP kSEXP, SEXP GSEXP, SEXP ksSEXP, SEXP ksmaxSEXP, SEXP deltaSEXP, SEXP tolSEXP, SEXP dimSEXP, SEXP initSEXP, SEXP centerSEXP) {
+RMatD forceatlas(RMatD m, int iter, bool linlog, bool nohubs, scalar k, scalar G, bool strong, scalar ks, scalar ksmax, scalar delta, scalar tol, ind dim, Nullable<RMatD> init, Nullable<RVecD> center);
+RcppExport SEXP _Rforceatlas_forceatlas(SEXP mSEXP, SEXP iterSEXP, SEXP linlogSEXP, SEXP nohubsSEXP, SEXP kSEXP, SEXP GSEXP, SEXP strongSEXP, SEXP ksSEXP, SEXP ksmaxSEXP, SEXP deltaSEXP, SEXP tolSEXP, SEXP dimSEXP, SEXP initSEXP, SEXP centerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -19,6 +66,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type nohubs(nohubsSEXP);
     Rcpp::traits::input_parameter< scalar >::type k(kSEXP);
     Rcpp::traits::input_parameter< scalar >::type G(GSEXP);
+    Rcpp::traits::input_parameter< bool >::type strong(strongSEXP);
     Rcpp::traits::input_parameter< scalar >::type ks(ksSEXP);
     Rcpp::traits::input_parameter< scalar >::type ksmax(ksmaxSEXP);
     Rcpp::traits::input_parameter< scalar >::type delta(deltaSEXP);
@@ -26,13 +74,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< ind >::type dim(dimSEXP);
     Rcpp::traits::input_parameter< Nullable<RMatD> >::type init(initSEXP);
     Rcpp::traits::input_parameter< Nullable<RVecD> >::type center(centerSEXP);
-    rcpp_result_gen = Rcpp::wrap(forceatlas(m, iter, linlog, nohubs, k, G, ks, ksmax, delta, tol, dim, init, center));
+    rcpp_result_gen = Rcpp::wrap(forceatlas(m, iter, linlog, nohubs, k, G, strong, ks, ksmax, delta, tol, dim, init, center));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_Rforceatlas_forceatlas", (DL_FUNC) &_Rforceatlas_forceatlas, 13},
+    {"_Rforceatlas_attr_func", (DL_FUNC) &_Rforceatlas_attr_func, 7},
+    {"_Rforceatlas_repl_func", (DL_FUNC) &_Rforceatlas_repl_func, 5},
+    {"_Rforceatlas_grav_func", (DL_FUNC) &_Rforceatlas_grav_func, 5},
+    {"_Rforceatlas_forceatlas", (DL_FUNC) &_Rforceatlas_forceatlas, 14},
     {NULL, NULL, 0}
 };
 
