@@ -53,7 +53,7 @@ scalar attr_func(
     scalar a = k * wgt;
     a *= linlog ? std::log<scalar>( 1.0 + d ).real() / d : 1.0;
     a /= nohubs ? deg_i : 1.0;
-    return a;
+    return a * -1.0;
 }
 
 // [[Rcpp::export]]
@@ -61,15 +61,17 @@ scalar repl_func(
     const scalar k, const scalar d, const scalar deg_i, const scalar deg_j,
     const bool overlap
 ) {
-    scalar r = ( overlap ) ? 100 * k * deg_i * deg_j : k * deg_i * deg_j / d / d;
-    return r * -1.0;
+    scalar mass = ( deg_i + 1.0 ) * ( deg_j + 1.0 );
+    scalar r = k * mass / d / d;
+    return r;
 }
 
 // [[Rcpp::export]]
 scalar grav_func(
     const scalar k, const scalar d, const scalar deg_i, const scalar G, const bool strong
 ) {
-    scalar g = k * G * ( deg_i + 1.0 ) / d;//( strong ) ? k * deg_i * G : k * deg_i * G / d;
+    scalar mass = ( deg_i + 1.0 );
+    scalar g = ( k * G * mass ) / d;
     return g;
 }
 
@@ -99,18 +101,17 @@ Mat force_func(
             if( i == j ) continue;
             Vec vj = pos.row( j );
             scalar deg_j = deg[j];
-            Vec ij = ( vi - vj ).eval();
+            Vec ij = ( vi - vj );
             scalar d = ij.norm();
             bool overlap = get_overlap( d, i, j );
             scalar w = edge_weight( W( i, j ), delta );
             scalar a = 0; //attr_func( k, d, deg_i, w, linlog, nohubs, overlap );
-            scalar r = 0; //repl_func( k, d, deg_i, deg_j, overlap );
+            scalar r = repl_func( k, d, deg_i, deg_j, overlap );
             Vec dj = ( ij * ( a + r ) );
             force.row( i ) += dj;
         }
         Vec vg = ( orig - vi );
-        scalar d = vg.norm();
-        scalar g = grav_func( k, d, deg_i, G / k, strong );
+        scalar g = grav_func( k, vg.norm(), deg_i, G / k, strong );
         Vec dg  = ( vg * g );
         force.row( i ) += dg;
     }
