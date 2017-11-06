@@ -59,6 +59,12 @@ require( igraph )
 g <- sample_grg( 100, .3 )
 lo <- layout_with_fa2( g )
 plot( g, layout=lo )
+
+require( cairoDevice
+g <- as.undirected( sample_pa( 500 ) )
+# base graphics is too slow.
+m <- forceatlas_live( device=cairodDevice::Cairo )
+# watch the pretty pcitures.
 ```
 
 # Author
