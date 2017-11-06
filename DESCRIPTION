@@ -11,7 +11,9 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     Rcpp (>= 0.12.13),
-    RcppEigen
+    RcppEigen,
+    RcppParallel,
+    Matrix
 LinkingTo:
     Rcpp,
     RcppEigen
