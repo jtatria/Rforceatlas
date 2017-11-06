@@ -1,6 +1,8 @@
 #include <Rcpp.h>
 #include "Rforceatlas_types.h"
-#include "fa2.hpp"
+#include "params.hpp"
+#include "graph.hpp"
+#include "work.hpp"
 
 using namespace Rcpp;
 
@@ -60,7 +62,7 @@ inline RMatD wrap_rowmat( Mat output ) {
 //' @export
 // [[Rcpp::export]]
 RMatD forceatlas(
-    S4 m, Nullable<RMatD> init=R_NilValue, Nullable<RVecD> center=R_NilValue,
+    S4 m, Nullable<RMatD> init=R_NilValue, Nullable<RVecD> center=R_NilValue, Nullable<RVecD> vsizes=R_NilValue,
     int dim=2, int iter=100, scalar delta=1.0, scalar tol=1.0, scalar k=10.0, scalar G=1.0,
     bool linlog=false, bool strong=false, bool nohubs=false, bool overlap=false
 ) {
@@ -68,6 +70,11 @@ RMatD forceatlas(
     SpMat W   = as<SpMat>( m );
     Vec orig  = ( center.isNull() ) ? Vec::Zero( dim ) : as<Vec>( center.get() );
     Mat pos   = ( init.isNull() ) ? Mat::Random( W.rows(), 2 ) * 1000: as_rowmat( init.get() );
-    fa2( pos, W, orig, params, iter );
+    Vec sizes  = ( vsizes.isNull() ) ? Vec::Ones( W.rows() ) : as<Vec>( vsizes );
+    GraphData gd( W, sizes );
+    Fa2Worker wrkr( pos, orig, gd, params );
+    for( int i = 0; i < iter; i++ ) {
+        wrkr.fa2_epoch();
+    }
     return wrap_rowmat( pos );
 }

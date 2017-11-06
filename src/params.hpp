@@ -3,7 +3,7 @@
 
 #include "eigen_types.hpp"
 
-struct Fa2Conf {
+struct Fa2Params {
 public:
     const scalar delta;
     const scalar tol;
@@ -34,7 +34,5 @@ public:
         overlap( overlap )
     {}
 };
-
-Mat fa2( Mat&, const SpMat&, const Vec&, const Fa2Conf, const int iter );
 
 #endif

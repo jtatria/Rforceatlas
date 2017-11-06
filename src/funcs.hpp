@@ -5,7 +5,7 @@
 
 scalar attr_func(
     const scalar d, const scalar mass_i, const scalar wgt,
-    const bool linlog, const bool nohubs, const bool overlap
+    const bool overlap, const bool linlog, const bool nohubs
 );
 
 scalar repl_func(
@@ -18,5 +18,11 @@ scalar grav_func(
 );
 
 scalar dist_func( const Vec& vi, const Vec& vj );
+
+scalar weight_func( const scalar w, const scalar delta );
+
+Vec swing_vec( const Mat& cur, const Mat& last );
+
+Vec tract_vec( const Mat& cur, const Mat& last );
 
 #endif

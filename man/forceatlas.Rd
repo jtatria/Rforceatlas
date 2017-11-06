@@ -7,9 +7,9 @@
 \alias{forceatlas_live}
 \title{ForceAtlas2 graph layout algortihm}
 \usage{
-forceatlas(m, init = NULL, center = NULL, dim = 2L, iter = 100L,
-  delta = 1, tol = 1, k = 10, G = 1, linlog = FALSE, strong = FALSE,
-  nohubs = FALSE, overlap = FALSE)
+forceatlas(m, init = NULL, center = NULL, vsizes = NULL, dim = 2L,
+  iter = 100L, delta = 1, tol = 1, k = 10, G = 1, linlog = FALSE,
+  strong = FALSE, nohubs = FALSE, overlap = FALSE)
 
 layout_with_fa2(g, attr = "weight", live = FALSE, ...)
 

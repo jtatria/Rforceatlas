@@ -8,14 +8,15 @@
 using namespace Rcpp;
 
 // forceatlas
-RMatD forceatlas(S4 m, Nullable<RMatD> init, Nullable<RVecD> center, int dim, int iter, scalar delta, scalar tol, scalar k, scalar G, bool linlog, bool strong, bool nohubs, bool overlap);
-RcppExport SEXP _Rforceatlas_forceatlas(SEXP mSEXP, SEXP initSEXP, SEXP centerSEXP, SEXP dimSEXP, SEXP iterSEXP, SEXP deltaSEXP, SEXP tolSEXP, SEXP kSEXP, SEXP GSEXP, SEXP linlogSEXP, SEXP strongSEXP, SEXP nohubsSEXP, SEXP overlapSEXP) {
+RMatD forceatlas(S4 m, Nullable<RMatD> init, Nullable<RVecD> center, Nullable<RVecD> vsizes, int dim, int iter, scalar delta, scalar tol, scalar k, scalar G, bool linlog, bool strong, bool nohubs, bool overlap);
+RcppExport SEXP _Rforceatlas_forceatlas(SEXP mSEXP, SEXP initSEXP, SEXP centerSEXP, SEXP vsizesSEXP, SEXP dimSEXP, SEXP iterSEXP, SEXP deltaSEXP, SEXP tolSEXP, SEXP kSEXP, SEXP GSEXP, SEXP linlogSEXP, SEXP strongSEXP, SEXP nohubsSEXP, SEXP overlapSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< S4 >::type m(mSEXP);
     Rcpp::traits::input_parameter< Nullable<RMatD> >::type init(initSEXP);
     Rcpp::traits::input_parameter< Nullable<RVecD> >::type center(centerSEXP);
+    Rcpp::traits::input_parameter< Nullable<RVecD> >::type vsizes(vsizesSEXP);
     Rcpp::traits::input_parameter< int >::type dim(dimSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< scalar >::type delta(deltaSEXP);
@@ -26,13 +27,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type strong(strongSEXP);
     Rcpp::traits::input_parameter< bool >::type nohubs(nohubsSEXP);
     Rcpp::traits::input_parameter< bool >::type overlap(overlapSEXP);
-    rcpp_result_gen = Rcpp::wrap(forceatlas(m, init, center, dim, iter, delta, tol, k, G, linlog, strong, nohubs, overlap));
+    rcpp_result_gen = Rcpp::wrap(forceatlas(m, init, center, vsizes, dim, iter, delta, tol, k, G, linlog, strong, nohubs, overlap));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_Rforceatlas_forceatlas", (DL_FUNC) &_Rforceatlas_forceatlas, 13},
+    {"_Rforceatlas_forceatlas", (DL_FUNC) &_Rforceatlas_forceatlas, 14},
     {NULL, NULL, 0}
 };
 

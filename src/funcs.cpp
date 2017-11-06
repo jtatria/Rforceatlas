@@ -2,7 +2,7 @@
 
 scalar attr_func(
     const scalar d, const scalar mass_i, const scalar wgt,
-    const bool linlog, const bool nohubs, const bool overlap
+    const bool overlap, const bool linlog, const bool nohubs
 ) {
     if( overlap ) return 0;
     scalar mass = mass_i;
@@ -31,4 +31,18 @@ scalar grav_func(
 
 scalar dist_func( const Vec& vi, const Vec& vj ) {
     return ( vi - vj ).norm();
+}
+
+scalar weight_func( const scalar w, const scalar delta ) {
+    if( delta <= 0.0 ) return 1.0;
+    if( delta <= 1.0 ) return w;
+    return std::pow<scalar>( w, delta );
+}
+
+Vec swing_vec( const Mat& cur, const Mat& last ) {
+    return ( last - cur ).rowwise().norm();
+}
+
+Vec tract_vec( const Mat& cur, const Mat& last ) {
+    return ( last + cur ).rowwise().norm() / 2;
 }

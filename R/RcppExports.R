@@ -42,7 +42,7 @@
 #'
 #' @family graph layout
 #' @export
-forceatlas <- function(m, init = NULL, center = NULL, dim = 2L, iter = 100L, delta = 1.0, tol = 1.0, k = 10.0, G = 1.0, linlog = FALSE, strong = FALSE, nohubs = FALSE, overlap = FALSE) {
-    .Call('_Rforceatlas_forceatlas', PACKAGE = 'Rforceatlas', m, init, center, dim, iter, delta, tol, k, G, linlog, strong, nohubs, overlap)
+forceatlas <- function(m, init = NULL, center = NULL, vsizes = NULL, dim = 2L, iter = 100L, delta = 1.0, tol = 1.0, k = 10.0, G = 1.0, linlog = FALSE, strong = FALSE, nohubs = FALSE, overlap = FALSE) {
+    .Call('_Rforceatlas_forceatlas', PACKAGE = 'Rforceatlas', m, init, center, vsizes, dim, iter, delta, tol, k, G, linlog, strong, nohubs, overlap)
 }
 
