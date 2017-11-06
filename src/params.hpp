@@ -14,7 +14,7 @@ public:
     const bool   nohubs;
     const bool   overlap;
 
-    Fa2Conf(
+    Fa2Params(
         const scalar delta=1.0,
         const scalar tol=1.0,
         const scalar k=10.0,

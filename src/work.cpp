@@ -1,7 +1,7 @@
 #include "work.hpp"
 #include "funcs.hpp"
 
-Fa2Worker::Fa2Worker( Mat& pos, const Vec& orig, const GraphData& gd, const Fa2Conf& params )
+Fa2Worker::Fa2Worker( Mat& pos, const Vec& orig, const GraphData& gd, const Fa2Params& params )
     : pos( pos ), orig( orig ), gd( gd ), params( params )
 {
     last    = Mat::Zero( pos.rows(), pos.cols() );
@@ -85,11 +85,11 @@ void Fa2Worker::apply_forces( const Mat& forces, const Vec& swing ) {
 
 void Fa2Worker::fa2_epoch() {
     Mat force = Mat::Zero( pos.rows(), pos.cols() );
-    global_forces( force, pos, orig, gd, params );
-    network_forces( force, pos, gd, params );
+    global_f( force );
+    network_f( force );
     Vec swing = swing_vec( force, last );
     Vec tract = tract_vec( force, last );
-    this->adjust_speed( swing, tract );
-    this->apply_forces( force, swing );
+    adjust_speed( swing, tract );
+    apply_forces( force, swing );
     last = force;
 }

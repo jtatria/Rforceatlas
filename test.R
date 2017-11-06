@@ -39,6 +39,6 @@ y <- c(
 )
 init <- cbind( x, y )
 m <- igraph::as_adjacency_matrix( g, type='both' )
-rbenchmark::benchmark( forceatlas( m, init=init, iter=5000, nohubs=TRUE ), nuatlas( m, init=init, iter=1000, nohubs=TRUE ), replications=10 )
+forceatlas( m, init=init, iter=5000, nohubs=TRUE )
 
 
