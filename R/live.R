@@ -36,7 +36,6 @@ forceatlas_live <- function(
     return( pos )
 }
 
-#' @export
 #' @importFrom Matrix which
 plot_step <- function( m, pos, iter, total, edges=FALSE, lwd=.1, ecol='grey', ... ) {
     plot( NA, ..., pty='s',
@@ -52,5 +51,3 @@ plot_step <- function( m, pos, iter, total, edges=FALSE, lwd=.1, ecol='grey', ..
     points( pos )
     title( main=sprintf( "ForceAtlas iteration %d out of %d", iter, total ) )
 }
-
-
