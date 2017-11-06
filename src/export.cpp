@@ -64,9 +64,10 @@ RMatD forceatlas(
     int dim=2, int iter=100, scalar delta=1.0, scalar tol=1.0, scalar k=10.0, scalar G=1.0,
     bool linlog=false, bool strong=false, bool nohubs=false, bool overlap=false
 ) {
+    Fa2Conf params( delta, tol, k, G, linlog, strong, nohubs, overlap );
     SpMat W   = as<SpMat>( m );
     Vec orig  = ( center.isNull() ) ? Vec::Zero( dim ) : as<Vec>( center.get() );
     Mat pos   = ( init.isNull() ) ? Mat::Random( W.rows(), 2 ) * 1000: as_rowmat( init.get() );
-    fa2( pos, W, orig, iter, dim, delta, tol, k, G, linlog, strong, nohubs, overlap );
+    fa2( pos, W, orig, params, iter );
     return wrap_rowmat( pos );
 }
