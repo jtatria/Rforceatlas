@@ -4,17 +4,18 @@ Title: R implementation of Gephi's ForceAtlas2 graph layout algorithm
 Version: 0.1.0
 Author: José Tomás Atria
 Maintainer: José Tomás Atria <jtatria@gmail.com>
-Description: R/Rcpp reimplementation of Jacomy et al.'s ForceAtlas2, 
+Description: R/Rcpp reimplementation of Jacomy et al.'s ForceAtlas2,
     originally developed in Java for the Gephi graph analysis software.
 License: GPL3
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports:
     Rcpp (>= 0.12.13),
     RcppEigen,
     RcppParallel,
     Matrix
 LinkingTo:
     Rcpp,
-    RcppEigen
+    RcppEigen,
+    RcppParallel
 RoxygenNote: 6.0.1

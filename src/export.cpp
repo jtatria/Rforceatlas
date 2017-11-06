@@ -47,7 +47,7 @@ inline RMatD wrap_rowmat( Mat output ) {
 //' @param tol    Numeric. Tolerance to swinging. Defaults to .1
 //' @param dim    Integer. Number of dimensions to position vertices against. Defaults to 2.
 //' @param init   Numeric matrix of dimensions nrow( m ) * dim giving initial vertex location.
-//'               Defaults to random locations in a -1000,1000 square.
+//'               Defaults to random locations in a -1,1 square.
 //' @param center Numeric vector of length equal to dim specifying the location of the plot center.
 //'               Defaults to origin (\code{rep( 0, length( dim ) )}).
 //'

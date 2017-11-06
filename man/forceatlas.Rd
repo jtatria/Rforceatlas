@@ -15,8 +15,8 @@ layout_with_fa2(g, attr = "weight", live = FALSE, ...)
 
 with_fa2(...)
 
-forceatlas_live(m, iter = 100, step = 10, dim = 2,
-  init = matrix(runif(nrow(m) * dim, -1, 1) * 1000, nrow(m), dim), ...)
+forceatlas_live(m, iter = 100, step = 10, device = NULL, edges = FALSE,
+  axes = FALSE, init = NULL, ...)
 }
 \arguments{
 \item{m}{An adjacency matrix.}

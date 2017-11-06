@@ -1,3 +1,5 @@
+#!/usr/bin/r
+
 # Rforceatlas: Rcpp implementation of the ForceAtlas2 algorithm
 # Copyright (C) 2017 José Tomás Atria jtatria at nomoi dot org
 #
@@ -16,12 +18,11 @@
 #
 
 #' @rdname forceatlas
+#' @param step Integer. How many iterations to run in-between frames.
 #' @param ... Passed to \code{forceatlas}
 #' @export
-forceatlas_live <- function(
-    m, iter=100, step=10, dim=2,
-    init=matrix( runif( nrow( m ) * dim, -1, 1 ) * 1000, nrow( m ), dim ), ...
-) {
+forceatlas_live <- function( m, iter=100, step=10, device=NULL, edges=FALSE, axes=FALSE, init=NULL, ... ) {
+    if( !is.null( device ) ) device()
     pos <- init
     for( e in 1:floor( iter / step ) ) {
         last <- pos
@@ -36,6 +37,7 @@ forceatlas_live <- function(
     return( pos )
 }
 
+#' @export
 #' @importFrom Matrix which
 plot_step <- function( m, pos, iter, total, edges=FALSE, lwd=.1, ecol='grey', ... ) {
     plot( NA, ..., pty='s',
@@ -51,3 +53,5 @@ plot_step <- function( m, pos, iter, total, edges=FALSE, lwd=.1, ecol='grey', ..
     points( pos )
     title( main=sprintf( "ForceAtlas iteration %d out of %d", iter, total ) )
 }
+
+
