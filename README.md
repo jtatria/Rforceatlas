@@ -73,4 +73,4 @@ J. T. Atria (jtatria@gmail.com)
 
 # License
 
-GPL v3 or later.
+LGPL v3 or later.
